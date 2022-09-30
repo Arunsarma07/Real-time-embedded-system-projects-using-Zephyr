@@ -1,0 +1,46 @@
+diff --git a/drivers/display/CMakeLists.txt b/drivers/display/CMakeLists.txt
+index 492ebadb73..58bbefe6a6 100644
+--- a/drivers/display/CMakeLists.txt
++++ b/drivers/display/CMakeLists.txt
+@@ -17,6 +17,7 @@ zephyr_library_sources_ifdef(CONFIG_SSD1306		ssd1306.c)
+ zephyr_library_sources_ifdef(CONFIG_SSD16XX		ssd16xx.c)
+ zephyr_library_sources_ifdef(CONFIG_ST7789V		display_st7789v.c)
+ zephyr_library_sources_ifdef(CONFIG_ST7735R		display_st7735r.c)
++zephyr_library_sources_ifdef(CONFIG_MAX7219		display_max7219.c)
+ 
+ zephyr_library_sources_ifdef(CONFIG_MICROBIT_DISPLAY
+ 	mb_display.c
+diff --git a/drivers/display/Kconfig b/drivers/display/Kconfig
+index c9a9f95562..003cf23520 100644
+--- a/drivers/display/Kconfig
++++ b/drivers/display/Kconfig
+@@ -29,6 +29,7 @@ source "drivers/display/Kconfig.sdl"
+ source "drivers/display/Kconfig.ssd1306"
+ source "drivers/display/Kconfig.ssd16xx"
+ source "drivers/display/Kconfig.st7735r"
++source "drivers/display/Kconfig.max7219"
+ source "drivers/display/Kconfig.st7789v"
+ source "drivers/display/Kconfig.gd7965"
+ source "drivers/display/Kconfig.dummy"
+diff --git a/drivers/pwm/pwm_mcux.c b/drivers/pwm/pwm_mcux.c
+index a4b5bc7559..3c330baa07 100644
+--- a/drivers/pwm/pwm_mcux.c
++++ b/drivers/pwm/pwm_mcux.c
+@@ -138,7 +138,7 @@ static int pwm_mcux_init(const struct device *dev)
+ 
+ 	PWM_GetDefaultConfig(&pwm_config);
+ 	pwm_config.prescale = config->prescale;
+-	pwm_config.reloadLogic = kPWM_ReloadPwmFullCycle;
++	pwm_config.reloadLogic = kPWM_ReloadImmediate;
+ 	pwm_config.clockSource = kPWM_BusClock;
+ 
+ 	status = PWM_Init(config->base, config->index, &pwm_config);
+diff --git a/samples/basic/blinky/prj.conf b/samples/basic/blinky/prj.conf
+index 91c3c15b37..126abcf472 100644
+--- a/samples/basic/blinky/prj.conf
++++ b/samples/basic/blinky/prj.conf
+@@ -1 +1,3 @@
+ CONFIG_GPIO=y
++CONFIG_DEBUG_THREAD_INFO=y
++CONFIG_THREAD_NAME=y
+\ No newline at end of file

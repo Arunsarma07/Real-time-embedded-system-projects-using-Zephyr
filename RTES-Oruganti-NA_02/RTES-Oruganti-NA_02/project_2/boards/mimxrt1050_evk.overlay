@@ -1,0 +1,42 @@
+/ {
+
+    pwmleds {
+        compatible = "pwm-leds";
+        pwm_r_led: led_r {
+            pwms = <&flexpwm1_pwm3 1>;
+            label = "FLEXPWM1_PWM3";
+        };
+
+        pwm_g_led: led_g {
+            pwms = <&flexpwm1_pwm3 0>;
+            label = "FLEXPWM1_PWM3";
+        };
+
+        pwm_b_led: led_b {
+            pwms = <&flexpwm1_pwm1 1>;
+            label = "FLEXPWM1_PWM1";
+        };
+    };
+
+ };
+
+&flexpwm1_pwm1 {
+    status = "okay";
+};
+
+&flexpwm1_pwm3 {
+    status = "okay";
+};
+
+&lpspi1 {
+    status = "okay";
+    max7219: mymax7219@0 {
+        compatible = "maxim,max7219";
+        status = "okay";
+        height = <8>;
+        width = <8>;
+        spi-max-frequency = <10000000>;
+        label = "maxim_max7219";
+        reg = <0>;
+    };
+};
