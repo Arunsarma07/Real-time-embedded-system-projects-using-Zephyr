@@ -1,0 +1,13 @@
+This repository contains the implementation of a Polling Server in Zephyr RTOS for Assignment 4 in CSE522 Real-time Embedded Systems course. The task of the server is to receive aperiodic job requests from a global queue and process them in the order of their arrival times while adhering to a budget given for every replenishment period. If the server's remaining budget is positive, it will continue running with its assigned priority.
+
+Implementation
+Zephyr RTOS doesn't have support for periodic and aperiodic tasks. Hence, a timer is used to trigger the repeated execution of a periodic task, while a Zephyr thread is used to implement the polling server. To track budget consumption, the thread execution time is measured at run-time using Zephyr tracing hooks. In this implementation, two tracing hooks, sys_port_trace_k_thread_switched_in() and sys_port_trace_k_thread_switched_out(), are used to track the execution time of the polling server. To configure SEGGER's SystemView service, two additional hooks for the polling server are added to the SystemView tracing functions for the switched_in and switched_out hooks. The polling_p4.patch file shows the hooks needed to be worked with.
+
+To simulate the computation of independent computation jobs, a busy loop of n iterations is used. This piece of code is included in the "looping" function, which is available in the task_model_p4.h header file. This header file also includes the structures to represent the threads for periodic tasks and the polling server.
+
+The implementation contains a timer definition and its expiry function for aperiodic requests. To start this timer, add the following line of code in the main program: k_timer_start(&req_timer, K_USEC(ARR_TIME), K_NO_WAIT). In the timer's expiry function, new requests are created with a random inter-arrival time and a random number of loop iterations and are put into a message queue. The polling server then gets the next request from the queue and performs the requested computation.
+
+Two useful functions for random number generation and for computing time difference are also included in the task_model_p4.h header file. It is recommended to use k_cycle_get_32() to track execution time.
+
+Evaluation
+The implementation computes the average response time of all aperiodic requests by using the parameters in task_model_p4.h as a test case. The average response time is computed with a maximum budget for polling server, i.e., BUDGET, subject to meeting the deadline requirement for all periodic jobs. The average response time of a background server is also computed to show the improvement of the polling server.
